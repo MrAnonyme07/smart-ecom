@@ -181,13 +181,13 @@ def get_category_recommendations():
         
         Be enthusiastic but honest in your recommendations."""
 
-        response = client.chat.completions.create(
-            model=model,
+        response = client.complete(
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Recommend the best {category} products from: {products_data}"}
+                SystemMessage(content=system_prompt),
+                UserMessage(content=f"Recommend the best {category} products from: {products_data}")
             ],
-            temperature=0.7
+            temperature=0.7,
+            model=model
         )
 
         return jsonify({
@@ -238,13 +238,13 @@ def get_price_based_recommendations():
         
         Group recommendations by price tiers if applicable."""
 
-        response = client.chat.completions.create(
-            model=model,
+        response = client.complete(
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Recommend products in this price range: {products_data}"}
+                SystemMessage(content=system_prompt),
+                UserMessage(content=f"Recommend products in this price range: {products_data}")
             ],
-            temperature=0.5
+            temperature=0.5,
+            model=model
         )
 
         return jsonify({
@@ -284,10 +284,10 @@ def generate_product_description():
         Make it compelling and include relevant keywords naturally.
         Focus on benefits, not just features."""
         
-        response = client.chat.completions.create(
+        response = client.complete(
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
+                SystemMessage(content=system_prompt),
+                UserMessage(content=user_prompt)
             ],
             temperature=0.8,
             top_p=1.0,
