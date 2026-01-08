@@ -42,6 +42,14 @@ def get_product_recommendations():
         
         if not user:
             return jsonify({'error': 'User not found'}), 404
+        
+        # Check if OpenAI client is properly initialized
+        if not client:
+            return jsonify({'error': 'AI service not properly configured'}), 500
+            
+        print(f"AI client initialized: {client is not None}")
+        print(f"Using model: {model}")
+        print(f"Using endpoint: {endpoint}")
             
         data = request.get_json()
         print(f"AI Recommendation request data: {data}")  # Debug
@@ -99,18 +107,21 @@ def get_product_recommendations():
         2. Highlight the products that best match the user's specific request
         3. Keep the response concise and focused on the available products"""
         
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=0.7,
-            top_p=0.9,
-            max_tokens=1000
-        )
-
-        ai_response = response.choices[0].message.content
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                top_p=0.9,
+                max_tokens=1000
+            )
+            ai_response = response.choices[0].message.content
+        except Exception as api_error:
+            print(f"OpenAI API error: {str(api_error)}")
+            return jsonify({'error': f'AI service error: {str(api_error)}'}), 500
         
         # Get top 3 products for recommendations
         top_products = products[:3]
