@@ -1,18 +1,20 @@
 import os
-from openai import OpenAI
+from azure.ai.inference import ChatCompletionsClient
+from azure.ai.inference.models import SystemMessage, UserMessage
+from azure.core.credentials import AzureKeyCredential
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models.user import User
 from ..models.product import Product
 
-# Initialize GitHub Copilot client
-github_token = os.environ.get("OPENAI_API_KEY")
+# Initialize Azure AI client
 endpoint = "https://models.github.ai/inference"
 model = "openai/gpt-4.1"
+token = os.environ.get("OPENAI_API_KEY")
 
-client = OpenAI(
-    base_url=endpoint,
-    api_key=github_token,
+client = ChatCompletionsClient(
+    endpoint=endpoint,
+    credential=AzureKeyCredential(token),
 )
 
 def get_filtered_products(filters=None):
@@ -108,19 +110,19 @@ def get_product_recommendations():
         3. Keep the response concise and focused on the available products"""
         
         try:
-            response = client.chat.completions.create(
-                model=model,
+            response = client.complete(
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+                    SystemMessage(content=system_prompt),
+                    UserMessage(content=user_prompt)
                 ],
                 temperature=0.7,
                 top_p=0.9,
-                max_tokens=1000
+                max_tokens=1000,
+                model=model
             )
             ai_response = response.choices[0].message.content
         except Exception as api_error:
-            print(f"OpenAI API error: {str(api_error)}")
+            print(f"Azure AI API error: {str(api_error)}")
             return jsonify({'error': f'AI service error: {str(api_error)}'}), 500
         
         # Get top 3 products for recommendations
