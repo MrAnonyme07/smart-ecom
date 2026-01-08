@@ -18,7 +18,9 @@ CORS(
             "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True
         }
-    }
+    },
+    origins=[frontend_url, "http://localhost:3000", "http://127.0.0.1:3000"],
+    supports_credentials=True
 )
 
 # Add explicit OPTIONS handler for CORS preflight
@@ -29,11 +31,12 @@ def handle_preflight():
         from flask import make_response
         response = make_response()
         origin = request.headers.get('Origin')
-        if origin in ['http://localhost:3000', 'http://127.0.0.1:3000']:
-            response.headers.add("Access-Control-Allow-Origin", origin)
-        response.headers.add('Access-Control-Allow-Headers', "Content-Type, Authorization")
-        response.headers.add('Access-Control-Allow-Methods', "GET, POST, PUT, DELETE, OPTIONS")
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        allowed_origins = [frontend_url, "http://localhost:3000", "http://127.0.0.1:3000"]
+        if origin in allowed_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
         return response
 
 # Global error handler to catch unhandled exceptions
