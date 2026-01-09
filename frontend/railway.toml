@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "npm run build && npm run start"
+startCommand = "npm run build && npx serve out -l 3000"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/"
@@ -10,4 +10,4 @@ healthcheckPath = "/"
 [env]
 NODE_ENV = "production"
 PORT = "3000"
-NODE_OPTIONS = "--max-old-space-size=2048"
+NODE_OPTIONS = "--max-old-space-size=4096"
