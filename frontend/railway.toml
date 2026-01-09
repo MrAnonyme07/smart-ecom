@@ -5,7 +5,9 @@ builder = "NIXPACKS"
 startCommand = "npm run build && npm run start"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+healthcheckPath = "/"
 
 [env]
 NODE_ENV = "production"
 PORT = "3000"
+NODE_OPTIONS = "--max-old-space-size=2048"
