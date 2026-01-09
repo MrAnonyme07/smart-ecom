@@ -8,8 +8,8 @@ from ..models.user import User
 from ..models.product import Product
 
 # Initialize Azure AI client
-endpoint = "https://api.githubcopilot.com"
-model = "gpt-4o"
+endpoint = "https://models.github.ai/inference"
+model = "openai/gpt-4o"
 token = os.environ.get("OPENAI_API_KEY")
 
 client = ChatCompletionsClient(
